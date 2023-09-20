@@ -7,6 +7,8 @@ const StudentList = () => {
     const [studentList, setStudentList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState();
+    const [action, setAction] = useState("add");
+    const [idStd, setIdStd] = useState("1")
     const onPageChange = (pageChange) => {
         if (pageChange < 1 || pageChange > totalPage || pageChange === currentPage) {
             return;
@@ -122,6 +124,9 @@ const StudentList = () => {
         );
         return pagination;
     };
+    const handleDelete = () => {
+        
+    }
     useEffect(() => {
         try {
             async function getStudents() {
@@ -137,19 +142,21 @@ const StudentList = () => {
     }, [currentPage])
     return (
         <>
-            
-            <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" ><i className="fa fa-plus" /> Add Student</button>
+            <div className="container d-flex justify-content-center">
+                <button className="btn btn-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Side Bar</button>
+
+
+                <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setAction("add")} ><i className="fa fa-plus" /> Add Student</button>
+            </div>
             <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <AddStudentForm />
+                        <AddStudentForm action={action} id={idStd} />
                     </div>
                 </div>
             </div>
 
             <div className="container">
-
-
                 <h3 className="d-flex justify-content-center">
                     Student List
                 </h3>
@@ -162,6 +169,7 @@ const StudentList = () => {
                             <th>Gender</th>
                             <th>City</th>
                             <th>Mark</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -174,6 +182,10 @@ const StudentList = () => {
                                     <td>{std.gender}</td>
                                     <td>{std.city}</td>
                                     <td>{std.mark}</td>
+                                    <td>
+                                        <button className="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { setAction("edit"); setIdStd(std.id) }}><i className="fa-solid fa-pencil" /></button>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(std.id)}><i className="fa-solid fa-trash" /></button>
+                                    </td>
                                 </tr>
                             ))
                         }
