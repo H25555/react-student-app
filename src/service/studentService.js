@@ -13,5 +13,8 @@ class StudentService {
     static getStudent(id) {
         return axios.get(`https://js-post-api.herokuapp.com/api/students/${id}`)
     }
+    static deleteStudent(id) {
+        return axios.delete(`https://js-post-api.herokuapp.com/api/students/${id}`)
+    }
 }
 export default StudentService;

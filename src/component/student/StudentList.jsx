@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import StudentService from "../../service/studentService";
 import AddStudentForm from './AddStudentForm';
+import { confirmAlert } from "react-confirm-alert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import swal from "sweetalert";
+import StudentModal from "./StudentModal";
+
 
 
 const StudentList = () => {
@@ -124,8 +130,28 @@ const StudentList = () => {
         );
         return pagination;
     };
-    const handleDelete = () => {
-        
+    const handleDelete = (stdID) => {
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this info!",
+            type: "danger",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        }).then(isConfirm => {
+            if (isConfirm) {
+                StudentService.deleteStudent(stdID)
+                swal("Deleted!", "Your file has been deleted.", "success");
+                setStudentList(studentList.filter((std) => std.id !== stdID))
+            } else {
+                swal("Cancelled", "Your file is safe :)", "error");
+            }
+        });
+
+
     }
     useEffect(() => {
         try {
@@ -142,19 +168,16 @@ const StudentList = () => {
     }, [currentPage])
     return (
         <>
+            <ToastContainer />
             <div className="container d-flex justify-content-center">
                 <button className="btn btn-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Side Bar</button>
 
 
                 <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => setAction("add")} ><i className="fa fa-plus" /> Add Student</button>
             </div>
-            <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <AddStudentForm action={action} id={idStd} />
-                    </div>
-                </div>
-            </div>
+
+            <AddStudentForm action={action} id={idStd} />
+            <StudentModal id={idStd} />
 
             <div className="container">
                 <h3 className="d-flex justify-content-center">
@@ -173,7 +196,7 @@ const StudentList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {
+                        {   
                             studentList.length && studentList.map((std, index) => (
                                 <tr key={index}>
                                     <td>{std.id}</td>
@@ -183,8 +206,11 @@ const StudentList = () => {
                                     <td>{std.city}</td>
                                     <td>{std.mark}</td>
                                     <td>
-                                        <button className="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { setAction("edit"); setIdStd(std.id) }}><i className="fa-solid fa-pencil" /></button>
-                                        <button className="btn btn-danger" onClick={() => handleDelete(std.id)}><i className="fa-solid fa-trash" /></button>
+                                        <button className="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { setAction("edit"); setIdStd(std.id) }}><i className="fa-solid fa-pencil" /></button>
+                                        <button className="btn btn-danger me-2" onClick={() => handleDelete(std.id)}><i className="fa-solid fa-trash" /></button>
+                                        <button type="button" className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#studentInfoModal" onClick={() => {setIdStd(std.id)}}>
+                                            <i className="fa fa-circle-info"/>
+                                        </button>
                                     </td>
                                 </tr>
                             ))
